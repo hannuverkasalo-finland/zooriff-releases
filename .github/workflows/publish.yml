@@ -1,0 +1,25 @@
+name: Publish release
+
+on:
+  push:
+    branches: [main]
+    paths: ["builds/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish builds/ZooRiff.apk as the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="build-$(date -u +%Y%m%d-%H%M)"
+          gh release create "$TAG" builds/ZooRiff.apk \
+            --title "ZooRiff Android test build ($TAG)" \
+            --notes "Debug-signed Android test build. Install by opening the APK on the phone and allowing the install when asked." \
+            --latest
